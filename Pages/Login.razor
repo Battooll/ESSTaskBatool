@@ -1,0 +1,54 @@
+﻿@page "/login"
+@using ESSTaskBatool.Services;
+@using ESSTaskBatool.Repos;
+@using System.ComponentModel.DataAnnotations;
+@using ESSTaskBatool.ViewModels;
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.EntityFramework;
+@inject Repos.IUser UserServices
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <InputText id="username" @bind-Value="loginModel.user.Username" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputPassword id="password" @bind="loginModel.user.Password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    private LoginViewModel loginModel = new LoginViewModel();
+
+    private async Task HandleValidSubmit()
+    {
+        // Call the user service to authenticate the user
+        var authenticationResult = await UserServices.AuthenticateAsync(loginModel);
+
+        if (authenticationResult.Success)
+        {
+            // Authentication successful, you can redirect the user to another page if needed
+            NavigationManager.NavigateTo("/userinformation");
+        }
+        else
+        {
+            // Authentication failed, handle errors
+            foreach (var error in authenticationResult.Errors)
+            {
+                // Handle each error (e.g., display error messages)
+                Console.WriteLine($"Error: {error}");
+            }
+        }
+    }
+}
+

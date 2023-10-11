@@ -1,0 +1,92 @@
+﻿@page "/register"
+
+@using ESSTaskBatool.Services;
+@using ESSTaskBatool.Repos;
+@using System.ComponentModel.DataAnnotations;
+@using ESSTaskBatool.ViewModels;
+@using Microsoft.AspNet.Identity;
+@using Microsoft.AspNet.Identity.EntityFramework;
+@inject ITanent TanentServices
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+
+<h3>Register</h3>
+
+<EditForm Model="@userModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <InputText id="username" @bind-Value="userModel.tanent.Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone:</label>
+        <InputNumber id="phone" @bind-Value="userModel.tanent.Phone" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <InputText id="address" @bind-Value="userModel.tanent.Address" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="userModel.tanent.Email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputPassword id="password" @bind="userModel.tanent.Password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+    private RegisterViewModel userModel = new RegisterViewModel();
+
+    private async Task HandleValidSubmit()
+    {
+        // Call the user service to register the user
+        var registrationResult = await TanentServices.RegisterAsync(userModel);
+
+        if (registrationResult.Success)
+        {
+            //Registration successful, you can redirect the user to another page if needed
+            //NavigationManager.NavigateTo("/success"); 
+            Console.WriteLine("Registration successful!");
+        }
+        else
+        {
+            // Registration failed, handle errors
+            foreach (var error in registrationResult.Errors)
+            {
+                //Handle each error (e.g., display error messages)
+                Console.WriteLine("Error: Adding didn't complete");
+            }
+        }
+    }
+
+    private async Task RegisterUser()
+    {
+        var user = new IdentityUser
+            {
+                UserName = userModel.tanent.Name,
+                Email = userModel.tanent.Email
+            };
+
+        var result = await UserManager.CreateAsync(user, userModel.tanent.Password);
+
+        if (result.Succeeded)
+        {
+            // Registration successful, redirect to login page
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            // Handle registration failure (display error messages, etc.)
+            Console.WriteLine("Error: Adding didn't complete");
+        }
+    }
+
+
+}
