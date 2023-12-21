@@ -61,7 +61,5 @@ Project Structure:
 •	Pages/Login.razor: Blazor component for user login.
 •	Pages/Index.razor: Main page.
 
-Challenges Faced:
-•	I had some struggles dealing with Blazor pages.
-•	I found some trouble to manage changes in .net 6 from .net core 3.1 which I used to deal with.
+
 
